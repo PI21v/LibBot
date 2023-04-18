@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="3.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Telegram.Bot" Version="18.0.0" />
     <PackageReference Include="Telegram.Bot.CommandHandler" Version="1.5.0" />
     <PackageReference Include="Telegram.Bot.Extensions" Version="1.0.0" />
@@ -18,6 +19,7 @@
     <PackageReference Include="Telegram.Bot.Interactivity.Commands" Version="2.0.0" />
     <PackageReference Include="Telegram.Bots.Extensions.AspNetCore" Version="5.9.0" />
     <PackageReference Include="Telegram.Bots.Extensions.Polling" Version="5.9.0" />
+    <PackageReference Include="Telegraph.Net" Version="1.1.0" />
   </ItemGroup>
 
 </Project>

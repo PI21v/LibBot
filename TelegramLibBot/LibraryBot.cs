@@ -19,6 +19,17 @@ using Polly;
 using Org.BouncyCastle.Asn1.X509.Qualified;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot.Types.InputFiles;
+using Telegraph;
+using Telegraph.Net.Models;
+using Telegraph.Net;
+using Telegram.Bot.Types.InlineQueryResults;
+using Telegram.Bots.Http;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Telegram.Bots;
+using Newtonsoft.Json;
+using System.Xml.Linq;
+using MimeKit.Cryptography;
+using System.Net.Http.Headers;
 
 namespace TelegramLibBot
 {
@@ -51,7 +62,9 @@ namespace TelegramLibBot
         public static string description = "";
         public static string author = "";
 
-        public static Telegram.Bot.Types.Message image;
+        public static string fileID;
+        public static string fileURL;
+        public static Telegram.Bot.Types.File file;
         public static Telegram.Bot.Types.Message temp;
         #endregion
 
@@ -100,16 +113,33 @@ namespace TelegramLibBot
                         await client.SendTextMessageAsync(message.Chat.Id, "Отправляю пост на модерацию");
                         Article article = new Article(title, genre, author, description);
 
-                        await client.SendTextMessageAsync(chatId, article.ToString());
-                        Telegram.Bot.Types.Message pollMessage = await client.SendPollAsync(
-                            chatId: chatId,
-                            question: $"Запрос на публикацию поста от ({message.From.Id}){message.From.Username}",                           
-                            options: new[]
-                            {
+
+                        
+                        //var pagePath = await CreateTelegraphPost(article);                       
+                        //await client.SendTextMessageAsync(chatId, pagePath);
+
+                        if (article.Author.Length + article.Genre.Length + article.Description.Length + article.Author.Length > 1000)
+                        {
+
+                            var pagePath = await CreateTelegraphPost(article);
+                            await client.SendTextMessageAsync(chatId, pagePath);
+                        }
+                        else
+                        {
+                            var photo = new InputOnlineFile(fileID);
+                            await client.SendPhotoAsync(chatId, photo, caption: article.ToString());
+
+                            await client.SendTextMessageAsync(chatId, article.ToString());
+
+                            Telegram.Bot.Types.Message pollMessage = await client.SendPollAsync(
+                                chatId: chatId,
+                                question: $"Запрос на публикацию поста от ({message.From.Id}){message.From.Username}",
+                                options: new[]
+                                {
                                 "Публиковать",
                                 "Не публиковать"
-                            }, cancellationToken: token);
-                        
+                                }, cancellationToken: token);
+                        }
                         break;
                     case "/commandslist":
                     case "список команд":
@@ -128,6 +158,77 @@ namespace TelegramLibBot
                         break;
                 }
             }
+        }
+
+        public async static Task<string> UploadImageToTelegraph()
+        {
+            var imageUrl = $"https://api.telegram.org/file/bot{token}/{file.FilePath}";
+            using (var httpClient = new HttpClient())
+            {
+                using (var content = new MultipartFormDataContent())
+                {
+                    using (var imageStream = new FileStream(imageUrl, FileMode.OpenOrCreate))
+                    {
+                        var imageContent = new StreamContent(imageStream);
+                        imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpg");
+                        content.Add(imageContent, "file", Path.GetFileName(imageUrl));
+                        using (var response = await httpClient.PostAsync("https://telegra.ph/upload", content))
+                        {
+                            var responseJson = await response.Content.ReadAsStringAsync();
+                            var result = Newtonsoft.Json.JsonConvert.DeserializeObject<TelegraphUploadResult>(responseJson);
+                            if (result != null && result.error == 0 && result.result.Count > 0)
+                            {
+                                return result.result[0].src;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private async static Task<string> CreateTelegraphPost(Article article)
+        {
+            var client = new TelegraphClient();
+            Account account = await client.CreateAccountAsync(
+                "Minoddein"     
+                     
+            );
+            //var imageUrl = await UploadImageToTelegraph();
+
+            var imageUrl = $"https://api.telegram.org/file/bot{token}/{file.FilePath}";
+
+            var nodeElementImage =  new NodeElement 
+            { 
+                Tag = "img",
+                Attributes = new Dictionary<string, string>
+                {
+                    { "src", imageUrl },                    
+                }
+            };
+            
+            NodeElement nodeElementGenres = new NodeElement
+            {               
+                Tag = "_text",
+                Attributes = new Dictionary<string, string> { { "value", "Жанры:"+article.Genre+"\n\n" } }              
+            };
+
+            NodeElement nodeElementDescription = new NodeElement
+            {
+                Tag = "_text",                      
+                Attributes = new Dictionary<string, string> { { "value", article.Description } }                
+            };           
+            var nodes = new List<NodeElement>();
+            nodes.Add(nodeElementImage);
+            nodes.Add(nodeElementGenres);
+            nodes.Add(nodeElementDescription);
+           
+            ITokenClient tokenClient = client.GetTokenClient(account.AccessToken);
+            
+            Telegraph.Net.Models.Page page = await tokenClient.CreatePageAsync(article.Title, nodes.ToArray(),article.Author);
+
+            
+            return page.Url;
         }
 
         private async static Task CreatePost(States states, ITelegramBotClient client, Telegram.Bot.Types.Update update, CancellationToken token,long id,string previous)
@@ -217,13 +318,56 @@ namespace TelegramLibBot
                     {
                         await client.SendTextMessageAsync(id, "Вы сказали: " + message);
                         author = message;                       
-                        states = States.Auto;
+                        states = States.IsWantToSendImage;
                         previous = message;
                     }
                     await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние Ожидания.");
                     await Task.Delay(1000);
                     await CreatePost(states, client, update, token, id, previous);
-                    break;               
+                    break;
+                case States.IsWantToSendImage:
+                    await client.SendTextMessageAsync(id, "Хотите добавить картинку?(После ответа 'Да', загрузите изображение)", replyMarkup: GetAddImageToPostButton());
+                    states = States.ImageRequest;
+                    await CreatePost(states, client, update, token, id, previous);
+                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние запроса.");
+                    break;
+                case States.ImageRequest:
+                    updates = client.GetUpdatesAsync(offset: 0, limit: 100, timeout: 0).Result;
+
+                    message = updates.LastOrDefault(u => u.Message != null && u.Message.Chat.Id == id)?.Message?.Text;
+
+                    if (message != null && (message == "Да" || message == "Нет"))
+                    {
+                        if(message == "Да")
+                        {
+                            states = States.WaitImage;
+                            previous = message;
+                        }
+                        else
+                        {
+                            states = States.Auto;
+                        }
+                    }
+                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние Ожидания.");
+                    await Task.Delay(1000);
+                    await CreatePost(states, client, update, token, id, previous);
+                    break;
+                case States.WaitImage:
+                    updates = client.GetUpdatesAsync(offset: 0, limit: 100, timeout: 0).Result;
+
+                    temp = updates.LastOrDefault(u => u.Message != null && u.Message.Chat.Id == id)?.Message;
+
+                    if (temp?.Photo != null)
+                    {
+                        fileID = temp.Photo[0].FileId;
+                        fileURL = temp.Photo[0].FileUniqueId;
+                        file = await client.GetFileAsync(fileID);
+                        states = States.Auto;
+                    }
+                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние Ожидания.");
+                    await Task.Delay(1000);
+                    await CreatePost(states, client, update, token, id, previous);
+                    break;
                 case States.Auto:
                     return;
                 
@@ -232,10 +376,7 @@ namespace TelegramLibBot
 
         }
 
-        async Task HandleCallBackQuery(ITelegramBotClient client, Telegram.Bot.Types.CallbackQuery callbackQuery)
-        {
-            
-        }
+     
         
 
         #region Вариант_с_Неработающим_поочерёдным_вводом
@@ -386,6 +527,19 @@ namespace TelegramLibBot
         }
 
 
-    }   
+    }
+
+    public class TelegraphUploadResult
+    {
+        public int error { get; set; }
+        public List<TelegraphUploadResultItem> result { get; set; }
+    }
+
+    public class TelegraphUploadResultItem
+    {
+        public string src { get; set; }
+        public int w { get; set; }
+        public int h { get; set; }
+    }
 
 }

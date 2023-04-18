@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[3.6.0, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "Telegram.Bot": {
               "target": "Package",
               "version": "[18.0.0, )"
@@ -83,6 +87,10 @@
             "Telegram.Bots.Extensions.Polling": {
               "target": "Package",
               "version": "[5.9.0, )"
+            },
+            "Telegraph.Net": {
+              "target": "Package",
+              "version": "[1.1.0, )"
             }
           },
           "imports": [

@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "OT7x6tuhFKIXYRwSkkiaiBpkrpeIS+jFP9Ec8vuQC6XDvbPI/2xGLpF+eJfR5dloaGbgLkuAwuyCn29m/W9I6w==",
+  "dgSpecHash": "MkJTZD6pV5TdVGI3R6RNnrs9dx7yEnjrJ3yQPkQ7Uu3LWB+O+t8H8PEMd1oMgBUpLnzyHZYdN4xJ4Z+xzxg28Q==",
   "success": true,
   "projectFilePath": "C:\\Users\\fikra\\source\\repos\\TelegramLibBot\\TelegramLibBot\\TelegramLibBot.csproj",
   "expectedPackageFiles": [
@@ -45,7 +45,7 @@
     "C:\\Users\\fikra\\.nuget\\packages\\microsoft.win32.primitives\\4.3.0\\microsoft.win32.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\fikra\\.nuget\\packages\\mimekit\\3.6.0\\mimekit.3.6.0.nupkg.sha512",
     "C:\\Users\\fikra\\.nuget\\packages\\netstandard.library\\1.6.1\\netstandard.library.1.6.1.nupkg.sha512",
-    "C:\\Users\\fikra\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
+    "C:\\Users\\fikra\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\fikra\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "C:\\Users\\fikra\\.nuget\\packages\\polly\\7.2.2\\polly.7.2.2.nupkg.sha512",
     "C:\\Users\\fikra\\.nuget\\packages\\polly.extensions.http\\3.0.0\\polly.extensions.http.3.0.0.nupkg.sha512",
@@ -142,7 +142,19 @@
     "C:\\Users\\fikra\\.nuget\\packages\\telegram.bot.interactivity.commands\\2.0.0\\telegram.bot.interactivity.commands.2.0.0.nupkg.sha512",
     "C:\\Users\\fikra\\.nuget\\packages\\telegram.bots\\5.9.0\\telegram.bots.5.9.0.nupkg.sha512",
     "C:\\Users\\fikra\\.nuget\\packages\\telegram.bots.extensions.aspnetcore\\5.9.0\\telegram.bots.extensions.aspnetcore.5.9.0.nupkg.sha512",
-    "C:\\Users\\fikra\\.nuget\\packages\\telegram.bots.extensions.polling\\5.9.0\\telegram.bots.extensions.polling.5.9.0.nupkg.sha512"
+    "C:\\Users\\fikra\\.nuget\\packages\\telegram.bots.extensions.polling\\5.9.0\\telegram.bots.extensions.polling.5.9.0.nupkg.sha512",
+    "C:\\Users\\fikra\\.nuget\\packages\\telegraph.net\\1.1.0\\telegraph.net.1.1.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Пакет \"Telegraph.Net 1.1.0\" был восстановлен с помощью \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\", а не целевой платформы проекта \"net7.0\". Этот пакет может быть не полностью совместим с вашим проектом.",
+      "libraryId": "Telegraph.Net",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }
