@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TelegramLibBot
 {
-    internal class Article
+    internal class Article // оформление
     {
         private string title;
         private string genre;

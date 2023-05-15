@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\fikra\\source\\repos\\TelegramLibBot\\TelegramLibBot\\TelegramLibBot.csproj": {}
+    "C:\\Users\\zhuko\\LibBot\\TelegramLibBot\\TelegramLibBot.csproj": {}
   },
   "projects": {
-    "C:\\Users\\fikra\\source\\repos\\TelegramLibBot\\TelegramLibBot\\TelegramLibBot.csproj": {
+    "C:\\Users\\zhuko\\LibBot\\TelegramLibBot\\TelegramLibBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\fikra\\source\\repos\\TelegramLibBot\\TelegramLibBot\\TelegramLibBot.csproj",
+        "projectUniqueName": "C:\\Users\\zhuko\\LibBot\\TelegramLibBot\\TelegramLibBot.csproj",
         "projectName": "TelegramLibBot",
-        "projectPath": "C:\\Users\\fikra\\source\\repos\\TelegramLibBot\\TelegramLibBot\\TelegramLibBot.csproj",
-        "packagesPath": "C:\\Users\\fikra\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\fikra\\source\\repos\\TelegramLibBot\\TelegramLibBot\\obj\\",
+        "projectPath": "C:\\Users\\zhuko\\LibBot\\TelegramLibBot\\TelegramLibBot.csproj",
+        "packagesPath": "C:\\Users\\zhuko\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zhuko\\LibBot\\TelegramLibBot\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\fikra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\zhuko\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -109,7 +109,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.200-preview.22628.1\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -159,7 +159,7 @@ namespace TelegramLibBot
         }
 
         /// <summary>
-        /// Метод для загрузки изображения на сервер Telegraph.ph с помощью HTTP-запроса
+        /// Метод для загрузки изображения на сервер Telegraph с помощью HTTP-запроса
         /// </summary>
         /// <returns></returns>
         public async static Task<string> UploadImageToTelegraph()
@@ -266,7 +266,7 @@ namespace TelegramLibBot
             switch (states)
             {
                 case States.TitleRequest:
-                    await client.SendTextMessageAsync(id, "Введите название поста: ");
+                    await client.SendTextMessageAsync(id, "Введите название вашего поста: ");
                     states = States.WaitTitle;
                     await CreatePost(states, client, update, token, id, previous);
                     await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние запроса.");
@@ -290,7 +290,7 @@ namespace TelegramLibBot
                     
                     break;
                 case States.GenreRequest:
-                    await client.SendTextMessageAsync(id, "Введите жанры поста: ");
+                    await client.SendTextMessageAsync(id, "Введите жанры вашего поста: ");
                     states = States.WaitGenre;
                     await CreatePost(states, client, update, token, id, previous);
                     await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние запроса.");
@@ -312,7 +312,7 @@ namespace TelegramLibBot
                     await CreatePost(states, client, update, token, id, previous);
                     break;
                 case States.DescriptionRequest:
-                    await client.SendTextMessageAsync(id, "Введите описание поста: ");
+                    await client.SendTextMessageAsync(id, "Введите описание вашего поста: ");
                     states = States.WaitDescription;
                     await CreatePost(states, client, update, token, id, previous);
                     await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние запроса.");
