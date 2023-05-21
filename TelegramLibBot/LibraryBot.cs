@@ -30,6 +30,11 @@ using Newtonsoft.Json;
 using System.Xml.Linq;
 using MimeKit.Cryptography;
 using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Telegram.Bots.Types.Passport;
+using Kvyk.Telegraph.Models;
+using Newtonsoft.Json.Linq;
 
 namespace TelegramLibBot
 {
@@ -54,6 +59,7 @@ namespace TelegramLibBot
 
         private static string token { get; set; } = "6058875061:AAGE5X5gw2DSOJE2ru58NFtZXXJyDNB9Im4";
         private static long chatId { get; set; } = -1001898169442;//Id чата-предложки
+        private static long chatIdMain { get; set; } = -1001705833894;//Id чата-предложки
         private static ITelegramBotClient client;
 
         #region данные_на_ввод
@@ -92,7 +98,7 @@ namespace TelegramLibBot
         {
             var message = update.Message;
             var updates = client.GetUpdatesAsync();
-            if (message?.Text != null && message.Chat.Id != chatId)
+            if (message?.Text != null && message.Chat.Id != chatId && message.Chat.Id != chatIdMain)
             {
                 await Console.Out.WriteLineAsync($"[{DateTime.Now}]({message.From.Id})" +
             $"{message.From.Username}:{message.Text}");
@@ -109,25 +115,26 @@ namespace TelegramLibBot
                         States states = States.TitleRequest;//Установка начального состояния ожидания данных(состояние "Запрос названия"
                         long id = message.Chat.Id;
                         string? previous = update?.Message?.Text;
-                        await CreatePost(states,client,update,token,id,previous);
+                        await CreatePost(states, client, update, token, id, previous);
                         await client.SendTextMessageAsync(message.Chat.Id, "Отправляю пост на модерацию");
                         Article article = new Article(title, genre, author, description);
 
 
-                        
-                        //var pagePath = await CreateTelegraphPost(article);                       
-                        //await client.SendTextMessageAsync(chatId, pagePath);
+
+                        var pagePath = await CreateTelegraphPost(article);
+                        await client.SendTextMessageAsync(chatId, pagePath);
 
                         if (article.Author.Length + article.Genre.Length + article.Description.Length + article.Author.Length > 1000)//Если суммарная длина поста превышает 1000 символов, то пост отправляется в виде статьи Telegraph
                         {
 
-                            var pagePath = await CreateTelegraphPost(article);
-                            await client.SendTextMessageAsync(chatId, pagePath);
+                            //var pagePath = await CreateTelegraphPost(article);
+                            await client.SendTextMessageAsync(chatIdMain, pagePath);
                         }
                         else
                         {
                             var photo = new InputOnlineFile(fileID);
-                            await client.SendPhotoAsync(chatId, photo, caption: article.ToString());                
+                            await client.SendPhotoAsync(chatId, photo, caption: article.ToString());
+                            await client.SendPhotoAsync(chatIdMain, photo, caption: article.ToString());
 
                             Telegram.Bot.Types.Message pollMessage = await client.SendPollAsync(
                                 chatId: chatId,
@@ -136,7 +143,7 @@ namespace TelegramLibBot
                                 {
                                 "Публиковать",
                                 "Не публиковать"
-                                }, cancellationToken: token);//Отправляем сообщение с голосованием
+                                }, cancellationToken: token);//Отправляем сообщение с голосованием                            
                         }
                         break;
                     case "/commandslist":
@@ -149,13 +156,10 @@ namespace TelegramLibBot
                                 await client.SendTextMessageAsync(message.Chat.Id, sr.ReadLine().ToString());
                             }
                         }
-                        break;
-                    default:
-                        await client.SendTextMessageAsync(message.Chat.Id, "Я не могу обработать данную команду. Попробуйте позже, может через время смогу!:)");
-                        break;
+                        break;                    
                     
                 }
-            }
+            }           
         }
 
         /// <summary>
@@ -164,7 +168,7 @@ namespace TelegramLibBot
         /// <returns></returns>
         public async static Task<string> UploadImageToTelegraph()
         {
-            var imageUrl = $"https://api.telegram.org/file/bot{token}/{file.FilePath}";//Сохраняем Url ссылку изображения
+            var imageUrl = $"https://api.telegram.org/file/bot{token}/{file.FilePath}";//Сохраняем Url ссылку изображения            
             using (var httpClient = new HttpClient())//Создаём объект класса для отправки HTTP-запросов
             {
                 var imageBytes = await httpClient.GetByteArrayAsync(imageUrl);
@@ -172,28 +176,30 @@ namespace TelegramLibBot
                 {
                     using (var imageStream = new MemoryStream(imageBytes))//Создаём объект для чтения бинарных данных изображения
                     {
-                        
+
                         var imageContent = new StreamContent(imageStream);
                         imageContent.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpg");
                         content.Add(imageContent, "file", Path.GetFileName(imageUrl));
                         using (var response = await httpClient.PostAsync("https://telegra.ph/upload", content))//Отправляем запрос с изображением на URL-адрес с данными из MultipartFormDataContent
                         {
                             var responseJson = await response.Content.ReadAsStringAsync();//Получаем ответ в формате JSON
+                            await Console.Out.WriteLineAsync($"[{DateTime.Now}]{responseJson}");
                             var result = Newtonsoft.Json.JsonConvert.DeserializeObject<TelegraphUploadResult[]>(responseJson);//Выполняем десериализацию и сохраняем в объекте класса TelegraphUploadResult в поле result 
-                            if (result != null && result[0].error == 0 && result[0].result.Count > 0)
+                            if (result != null)
                             {
-                                return result[0].result[0].src;
+                                return result[0].src;
                             }
                             else
                             {
                                 await Console.Out.WriteLineAsync($"[{DateTime.Now}]Ошибка десериализации изображения с сервера");
                             }
-                        }                      
+                        }
                     }
                 }
             }
             return null;
         }
+
 
         /// <summary>
         /// Создание поста в формате Telegraph статьи
@@ -205,24 +211,22 @@ namespace TelegramLibBot
             try
             {
                 var client = new TelegraphClient();
-                Account account = await client.CreateAccountAsync(
+                Telegraph.Net.Models.Account account = await client.CreateAccountAsync(
                     "Minoddein"
 
                 );//Регистрация аккаунта Telegraph
-
+                
                 var imageUrl = await UploadImageToTelegraph();
-
                 //var imageUrl = $"https://api.telegram.org/file/bot{token}/{file.FilePath}";
-
                 var nodeElementImage = new NodeElement //Создаём элемент статьи с тегом "img" и атрибутом для хранения изображения 
                 {
                     Tag = "img",
                     Attributes = new Dictionary<string, string>
                 {
-                    { "src", imageUrl },
+                    { "src", imageUrl },                   
                 }
                 };
-
+               
                 NodeElement nodeElementGenres = new NodeElement//Создаём элемент статьи с тегом "_text" и атрибутом для хранения жанров статьи
                 {
                     Tag = "_text",
@@ -436,9 +440,13 @@ namespace TelegramLibBot
 
     }
 
+    
     public class TelegraphUploadResult
     {
-        public int error { get; set; }
+        public int error { get; set; }       
+        public string src { get; set; }
+        public int w { get; set; }
+        public int h { get; set; }
         public List<TelegraphUploadResultItem> result { get; set; }
     }
 
