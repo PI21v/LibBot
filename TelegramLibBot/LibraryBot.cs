@@ -55,29 +55,16 @@ namespace TelegramLibBot
             ImageRequest = 10,
             IsWantToSendImage = 12,
             Auto = 11,
-            //Чащин
-            PostTypeRequest = 13,
-            WaitPostType = 14,
-            TegsRequest = 15,
-            WaitTegs = 16,
-            //
         }
 
-        //Жуков
+       
         static bool exitFlag = false;
-        //
         private static string token { get; set; } = "6058875061:AAGE5X5gw2DSOJE2ru58NFtZXXJyDNB9Im4";
         private static long chatId { get; set; } = -1001898169442;//Id чата-предложки
         private static long chatIdMain { get; set; } = -1001705833894;//Id чата-предложки
         private static ITelegramBotClient client;
 
         #region данные_на_ввод
-        //Чащин
-        public static int idMessage;
-
-        public static string postType = "";
-        public static string tegs = "";
-        //
         public static string title = "";
         public static string genre = "";
         public static string description = "";
@@ -87,9 +74,6 @@ namespace TelegramLibBot
         public static string fileURL;
         public static Telegram.Bot.Types.File file;
         public static Telegram.Bot.Types.Message temp;
-        //Чащин
-        public static Telegram.Bot.Types.Message previousPhoto;
-        //
         #endregion
 
         public ITelegramBotClient Client { get => client; }
@@ -129,13 +113,6 @@ namespace TelegramLibBot
                         break;
                     case "/createpost":
                     case "создать пост":
-                        //Чащин
-                        fileID = null;
-                        fileURL = null;
-                        file = null;
-                        temp = null;
-                        States states = States.PostTypeRequest;//Установка начального состояния ожидания данных(состояние "Запрос типа поста")
-                        //
                         long id = message.Chat.Id;
                         string? previous = update?.Message?.Text;
                         await CreatePost(states, client, update, token, id, previous);
@@ -150,13 +127,7 @@ namespace TelegramLibBot
                         var pagePath = await CreateTelegraphPost(article);
                         await client.SendTextMessageAsync(chatId, pagePath);
 
-                        //Якубенко
-                        if (article.Author.Length + article.Genre.Length + article.Description.Length + article.Author.Length > 1000 && file != null)//Если суммарная длина поста превышает 1000 символов, то пост отправляется в виде статьи Telegraph
-                        {
-
-                            //var pagePath = await CreateTelegraphPost(article);
-                            await client.SendTextMessageAsync(chatIdMain, pagePath);
-                        }//
+                        
                         else
                         {
                             var photo = new InputOnlineFile(fileID);
@@ -184,13 +155,6 @@ namespace TelegramLibBot
                             }
                         }
                         break;
-                    //Денисюк
-                    case "/complaints":
-                    case "жалобы":
-                        await client.SendTextMessageAsync(message.Chat.Id, "Список администраторов, к которым Вы можете обратиться:");
-                        await GetContacts(client, update, token, message.Chat.Id);
-                        break;
-                    //Денисюк
                 }
             }           
         }
@@ -233,26 +197,7 @@ namespace TelegramLibBot
             return null;
         }
 
-        //Денисюк
-
-        /// <summary>
-        /// Получение контактов админов 
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="update"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        private async static Task GetContacts(ITelegramBotClient client, Telegram.Bot.Types.Update update, CancellationToken token,long id)
-        {
-            var chatMembers = await client.GetChatAdministratorsAsync(chatId);
-            
-            for(var i = 0;i < chatMembers.Length;i++)
-            {
-                await client.SendTextMessageAsync(id,"@" + chatMembers[i].User.Username);
-            }
-           
-        }
-        //
+        
 
         /// <summary>
         /// Создание поста в формате Telegraph статьи
@@ -271,7 +216,7 @@ namespace TelegramLibBot
                 
                 var imageUrl = await UploadImageToTelegraph();
                 //var imageUrl = $"https://api.telegram.org/file/bot{token}/{file.FilePath}";
-                var nodeElementImage = new NodeElement //Создаём элемент статьи с тегом "img" и атрибутом для хранения изображения 
+                var nodeElementImage = new NodjeElement //Создаём элемент статьи с тегом "img" и атрибутом для хранения изображения 
                 {
                     Tag = "img",
                     Attributes = new Dictionary<string, string>
@@ -322,42 +267,6 @@ namespace TelegramLibBot
         {
             switch (states)
             {
-                //Чащин
-                case States.PostTypeRequest:
-                    var Message = await client.SendTextMessageAsync(id, "Выберите тип поста или введите свой: ", replyMarkup: GetCreatePostButtons());
-                    idMessage = Message.MessageId;
-                    states = States.WaitPostType;
-                    await CreatePost(states, client, update, token, id, previous);
-                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние запроса.");
-                    break;
-                //
-                //Якубенко
-                case States.WaitPostType:
-                    var updates = client.GetUpdatesAsync(offset: 0, limit: 100, timeout: 0).Result;
-
-                    var message = updates.LastOrDefault(u => u.Message != null && u.Message.Chat.Id == id)?.Message?.Text;
-                    if (message == "/exit")
-                    {
-                        exitFlag = true;
-                        await client.SendTextMessageAsync(id, "Выход из процесса создания...", replyMarkup: GetCreatePostButtons());
-                        return;
-                    }
-                    if (message != null && message != "" && message != previous)
-                    {
-                        await client.SendTextMessageAsync(id, "Вы сказали: " + message);
-                        
-                        await Console.Out.WriteLineAsync($"[{DateTime.Now}]({update.Id})" +
-            $":{message}");
-                        postType = message;
-                        states = States.TitleRequest;
-                        previous = message;
-                        //await client.EditMessageReplyMarkupAsync(id, idMessage, replyMarkup: null);
-                    }                  
-                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние Ожидания.");
-                    await Task.Delay(1000);
-                    await CreatePost(states, client, update, token, id, previous);
-                    break;
-                //
                 case States.TitleRequest:
                     await client.SendTextMessageAsync(id, "Введите название поста: ", replyMarkup: GetExitButton());
                     states = States.WaitTitle;
@@ -390,7 +299,7 @@ namespace TelegramLibBot
                     await CreatePost(states, client, update, token, id, previous);
                     
                     break;
-                //Жуков
+               
                 case States.GenreRequest:
                     Message = await client.SendTextMessageAsync(id, "Выберите жанр поста или введите свой: ", replyMarkup: GetGenresButtons());
                     idMessage = Message.MessageId;
@@ -482,39 +391,7 @@ namespace TelegramLibBot
                     await Task.Delay(1000);
                     await CreatePost(states, client, update, token, id, previous);
                     break;
-                //
-                //Якубенко
-                case States.AuthorRequest:
-                    await client.SendTextMessageAsync(id, "Укажите автора поста: ", replyMarkup: GetAuthorButtons());
-                    states = States.WaitAuthor;
-                    await CreatePost(states, client, update, token, id, previous);
-                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние запроса.");
-                    break;
-                case States.WaitAuthor:
-                    updates = client.GetUpdatesAsync(offset: 0, limit: 100, timeout: 0).Result;
-
-                    message = updates.LastOrDefault(u => u.Message != null && u.Message.Chat.Id == id)?.Message?.Text;
-                    if (message == "/exit")
-                    {
-                        exitFlag = true;
-                        await client.SendTextMessageAsync(id, "Выход из процесса создания...", replyMarkup: GetCreatePostButtons());
-                        return;
-                    }                   
-                    if (message != null && message != "" && message != previous)
-                    {
-                        await client.SendTextMessageAsync(id, "Вы сказали: " + message);
-                        await Console.Out.WriteLineAsync($"[{DateTime.Now}]({update.Id})" +
-            $":{message}");
-                        author = message;                       
-                        states = States.IsWantToSendImage;
-                        previous = message;
-                    }
-                    
-                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние Ожидания.");
-                    await Task.Delay(1000);
-                    await CreatePost(states, client, update, token, id, previous);
-                    break;
-                //
+                
                 case States.IsWantToSendImage:
                     await client.SendTextMessageAsync(id, "Хотите добавить картинку?(После ответа 'Да', загрузите изображение)", replyMarkup: GetAddImageToPostButton());
                     states = States.ImageRequest;
@@ -542,26 +419,6 @@ namespace TelegramLibBot
                     await Task.Delay(1000);
                     await CreatePost(states, client, update, token, id, previous);
                     break;
-                //Денисюк
-                case States.WaitImage:
-                    updates = client.GetUpdatesAsync(offset: 0, limit: 100, timeout: 0).Result;
-
-                    temp = updates.LastOrDefault(u => u.Message != null && u.Message.Chat.Id == id)?.Message;
-                    
-                    if ((temp?.Photo != null && temp?.Photo != previousPhoto?.Photo) || (temp?.Date.Second < 10))
-                    {
-                        fileID = temp.Photo[0].FileId;
-                        fileURL = temp.Photo[0].FileUniqueId;
-                        file = await client.GetFileAsync(fileID);
-                        states = States.Auto;
-                        previousPhoto = temp;
-                        await client.SendTextMessageAsync(id, "Выход из процесса создания...", replyMarkup: GetCreatePostButtons());
-                    }
-                    await Console.Out.WriteLineAsync($"[{DateTime.Now}] Состояние Ожидания.");
-                    await Task.Delay(1000);
-                    await CreatePost(states, client, update, token, id, previous);
-                    break;
-                //
                 case States.Auto:
                     return;
                 
@@ -573,30 +430,8 @@ namespace TelegramLibBot
                        
         private static IReplyMarkup? GetCreatePostButtons()
         {   
-            //Чащин
-            return new ReplyKeyboardMarkup(new List<List<KeyboardButton>>
-            {
-                new List<KeyboardButton>
-                {
-                    new KeyboardButton("Книга"),
-                    new KeyboardButton("Сериал"),
-                    new KeyboardButton("Фильм")
-                },
-                new List<KeyboardButton>
-                {
-                    new KeyboardButton("Манга"),
-                    new KeyboardButton("Комикс"),
-                    new KeyboardButton("Статья")
-                },
-                new List<KeyboardButton>
-                {
-                    new KeyboardButton("/exit")
-                }
-            });
-            //
+           
         }
-
-        //Жуков
         private static IReplyMarkup? GetGenresButtons()
         {            
             return new ReplyKeyboardMarkup(new List<List<KeyboardButton>>
@@ -637,24 +472,6 @@ namespace TelegramLibBot
             });            
         }
 
-        //Якубенко
-        private static IReplyMarkup? GetAuthorButtons()
-        {
-            return new ReplyKeyboardMarkup(new List<List<KeyboardButton>>
-            {
-                new List<KeyboardButton>{new KeyboardButton("Аноним"), new KeyboardButton("/exit")}
-            });
-        }
-        
-        private static IReplyMarkup? GetExitButton()
-        {
-            return new ReplyKeyboardMarkup(new List<KeyboardButton>
-            {               
-                new KeyboardButton("/exit")
-            });
-        }
-        //
-
         private static IReplyMarkup? GetAddImageToPostButton()
         {
             return new ReplyKeyboardMarkup(new List<List<KeyboardButton>>
@@ -663,18 +480,6 @@ namespace TelegramLibBot
             });
 
         }
-
-        //Денисюк
-        private static IReplyMarkup? GetButtons()
-        {            
-            return new ReplyKeyboardMarkup(new List<List<KeyboardButton>>
-                {
-                    new List<KeyboardButton> { new KeyboardButton("Создать пост"), new KeyboardButton("Список команд"), new KeyboardButton("Жалобы") }
-                });
-            
-        }        
-        //
-
     }
 
     
