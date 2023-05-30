@@ -8,6 +8,8 @@
     ".NETCoreApp,Version=v7.0": {
       "TelegramLibBot/1.0.0": {
         "dependencies": {
+          "Hl7.Fhir.ElementModel": "4.3.0",
+          "Kvyk.Telegraph": "1.1.0",
           "MailKit": "3.6.0",
           "Newtonsoft.Json": "13.0.3",
           "Telegram.Bot": "18.0.0",
@@ -23,6 +25,39 @@
         },
         "runtime": {
           "TelegramLibBot.dll": {}
+        }
+      },
+      "Hl7.Fhir.ElementModel/4.3.0": {
+        "dependencies": {
+          "Hl7.Fhir.Support": "4.3.0"
+        },
+        "runtime": {
+          "lib/net6.0/Hl7.Fhir.ElementModel.dll": {
+            "assemblyVersion": "4.3.0.0",
+            "fileVersion": "4.3.0.0"
+          }
+        }
+      },
+      "Hl7.Fhir.Support/4.3.0": {
+        "dependencies": {
+          "System.Reflection.Emit.Lightweight": "4.7.0"
+        },
+        "runtime": {
+          "lib/net6.0/Hl7.Fhir.Support.dll": {
+            "assemblyVersion": "4.3.0.0",
+            "fileVersion": "4.3.0.0"
+          }
+        }
+      },
+      "Kvyk.Telegraph/1.1.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "13.0.3"
+        },
+        "runtime": {
+          "lib/net5.0/Telegraph.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
         }
       },
       "MailKit/3.6.0": {
@@ -657,7 +692,7 @@
           "System.Reflection": "4.3.0",
           "System.Reflection.Emit": "4.3.0",
           "System.Reflection.Emit.ILGeneration": "4.3.0",
-          "System.Reflection.Emit.Lightweight": "4.3.0",
+          "System.Reflection.Emit.Lightweight": "4.7.0",
           "System.Reflection.Extensions": "4.3.0",
           "System.Reflection.Primitives": "4.3.0",
           "System.Reflection.TypeExtensions": "4.3.0",
@@ -757,14 +792,7 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "System.Reflection.Emit.Lightweight/4.3.0": {
-        "dependencies": {
-          "System.Reflection": "4.3.0",
-          "System.Reflection.Emit.ILGeneration": "4.3.0",
-          "System.Reflection.Primitives": "4.3.0",
-          "System.Runtime": "4.3.0"
-        }
-      },
+      "System.Reflection.Emit.Lightweight/4.7.0": {},
       "System.Reflection.Extensions/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
@@ -1249,6 +1277,27 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Hl7.Fhir.ElementModel/4.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VUXBP+W0/1tBpOzo7KeW7y1CnVxaBjLbruX7QORrlImUXJwWpKU/yd3rkpkyd6RW6V06/cg46/afbFYnH+v0DA==",
+      "path": "hl7.fhir.elementmodel/4.3.0",
+      "hashPath": "hl7.fhir.elementmodel.4.3.0.nupkg.sha512"
+    },
+    "Hl7.Fhir.Support/4.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-rJx7g5rH0hngu/9C7JjWm/tb0TDkJa5xYYgI7A9USKg4JAGWE2aQIR/MSDaEh9U1wrfynyC1bwZ0B9Krjc0vLQ==",
+      "path": "hl7.fhir.support/4.3.0",
+      "hashPath": "hl7.fhir.support.4.3.0.nupkg.sha512"
+    },
+    "Kvyk.Telegraph/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-pn6s/rouVGbEEMMjSDv4idaq3OFU6SpGArc7k+cxCRcroICiNfyvH29FbgxcutIBBSy31kLOvs3Rn5taCejdZA==",
+      "path": "kvyk.telegraph/1.1.0",
+      "hashPath": "kvyk.telegraph.1.1.0.nupkg.sha512"
     },
     "MailKit/3.6.0": {
       "type": "package",
@@ -1894,12 +1943,12 @@
       "path": "system.reflection.emit.ilgeneration/4.3.0",
       "hashPath": "system.reflection.emit.ilgeneration.4.3.0.nupkg.sha512"
     },
-    "System.Reflection.Emit.Lightweight/4.3.0": {
+    "System.Reflection.Emit.Lightweight/4.7.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-oadVHGSMsTmZsAF864QYN1t1QzZjIcuKU3l2S9cZOwDdDueNTrqq1yRj7koFfIGEnKpt6NjpL3rOzRhs4ryOgA==",
-      "path": "system.reflection.emit.lightweight/4.3.0",
-      "hashPath": "system.reflection.emit.lightweight.4.3.0.nupkg.sha512"
+      "sha512": "sha512-a4OLB4IITxAXJeV74MDx49Oq2+PsF6Sml54XAFv+2RyWwtDBcabzoxiiJRhdhx+gaohLh4hEGCLQyBozXoQPqA==",
+      "path": "system.reflection.emit.lightweight/4.7.0",
+      "hashPath": "system.reflection.emit.lightweight.4.7.0.nupkg.sha512"
     },
     "System.Reflection.Extensions/4.3.0": {
       "type": "package",
