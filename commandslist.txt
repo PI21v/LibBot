@@ -1,4 +1,0 @@
-﻿/start
-/createpost
-/commandslist
-/complaints
