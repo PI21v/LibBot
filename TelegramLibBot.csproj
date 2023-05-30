@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hl7.Fhir.ElementModel" Version="4.3.0" />
+    <PackageReference Include="Kvyk.Telegraph" Version="1.1.0" />
+    <PackageReference Include="MailKit" Version="3.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Telegram.Bot" Version="18.0.0" />
+    <PackageReference Include="Telegram.Bot.CommandHandler" Version="1.5.0" />
+    <PackageReference Include="Telegram.Bot.Extensions" Version="1.0.0" />
+    <PackageReference Include="Telegram.Bot.Extensions.Markup" Version="1.0.1" />
+    <PackageReference Include="Telegram.Bot.Extensions.Passport" Version="1.0.0" />
+    <PackageReference Include="Telegram.Bot.Framework" Version="1.1.4" />
+    <PackageReference Include="Telegram.Bot.Interactivity.Commands" Version="2.0.0" />
+    <PackageReference Include="Telegram.Bots.Extensions.AspNetCore" Version="5.9.0" />
+    <PackageReference Include="Telegram.Bots.Extensions.Polling" Version="5.9.0" />
+    <PackageReference Include="Telegraph.Net" Version="1.1.0" />
+  </ItemGroup>
+
+</Project>
