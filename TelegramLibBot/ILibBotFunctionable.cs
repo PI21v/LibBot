@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TelegramLibBot
 {
-    internal interface ILibBotFunctionable // интерфейс
+    internal interface ILibBotFunctionable
     {
          public void CreatePost();
     }

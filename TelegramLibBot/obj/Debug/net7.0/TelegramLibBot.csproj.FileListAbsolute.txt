@@ -36,3 +36,6 @@ C:\Users\fikra\source\repos\TelegramLibBot\TelegramLibBot\bin\Debug\net7.0\Teleg
 C:\Users\fikra\source\repos\TelegramLibBot\TelegramLibBot\bin\Debug\net7.0\Telegram.Bots.Extensions.AspNetCore.dll
 C:\Users\fikra\source\repos\TelegramLibBot\TelegramLibBot\bin\Debug\net7.0\Telegram.Bots.Extensions.Polling.dll
 C:\Users\fikra\source\repos\TelegramLibBot\TelegramLibBot\bin\Debug\net7.0\Adfa.Telegraph.Net.dll
+C:\Users\fikra\source\repos\TelegramLibBot\TelegramLibBot\bin\Debug\net7.0\Hl7.Fhir.ElementModel.dll
+C:\Users\fikra\source\repos\TelegramLibBot\TelegramLibBot\bin\Debug\net7.0\Hl7.Fhir.Support.dll
+C:\Users\fikra\source\repos\TelegramLibBot\TelegramLibBot\bin\Debug\net7.0\Telegraph.dll
